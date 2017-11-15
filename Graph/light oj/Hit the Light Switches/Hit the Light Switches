@@ -1,0 +1,130 @@
+#include<cstdio>
+#include<sstream>
+#include<cstdlib>
+#include<cctype>
+#include<cmath>
+#include<algorithm>
+#include<set>
+#include<queue>
+#include<stack>
+#include<list>
+#include<iostream>
+#include<fstream>
+#include<numeric>
+#include<string>
+#include<vector>
+#include<cstring>
+#include<map>
+#include<iterator>
+using namespace std;
+vector< vector<int> >node(10010),head(10010);
+int a[10010],mark[10010],place[10010],cycle[10010],m[10010];
+queue<int>q;
+map<pair<int,int>,int>mp;
+int main()
+{
+    int i,j,k,n,s,x,d,mx,t,T;
+    vector<int>::iterator cnt;
+    cin>>T;
+    for(t=1;t<=T;t++)
+    {
+        mp.clear();
+        for(i=0;i<10010;i++)
+        {
+            m[i]=a[i]=cycle[i] = mark[i] = place[i] = 0;
+        }
+        cin>>n>>s;
+        for(i=0;i<s;i++)
+        {
+            cin>>j>>k;
+            if(mp[make_pair(j,k)]==0)
+            {
+                mp[make_pair(j,k)]++;
+                node[j].push_back(k);
+                head[k].push_back(j);
+            }
+ 
+        }
+        cout<<"Case "<<t<<": ";
+        mx=0;
+        for(i=1;i<=n;i++)
+        {
+            //cout<<"i "<<i<<" mark "<<mark[i]<<" cycle "<<cycle[i]<<" place "<<place[i]<<endl;
+            if(mark[i]!=0)continue;
+ 
+            mark[i]=i;q.push(i);//cout<<" q-> "<<i<<endl;
+            a[0]++;a[a[0]]=i;place[i]=a[0];
+            while(!q.empty())
+            {
+                x = q.front();q.pop();//cout<<"X:"<<x<<endl;
+ 
+                for(vector<int>::iterator it=node[x].begin();it!=node[x].end();it++)
+                {
+                    k = *it;//cout<<"k "<<k<<endl;
+                    //cout<<"mark "<<mark[k]<<endl;
+                    if(mark[k]==0)
+                    {
+                        q.push(k);mark[k]=i;//cout<<"q-> "<<k<<endl;
+                        //cout<<"mark "<<mark[k]<<endl;
+                    }
+                    else if(cycle[k]==1 && place[mark[k]]!=0)
+                    {
+                        //cout<<"place "<<place[mark[k]]<<" a "<<a[place[mark[k]]]<<" a[a[0]] "<<a[a[0]]<<endl;
+                        a[place[mark[k]]] = a[a[0]];
+                        place[mark[k]] = 0;
+                        //cout<<" a "<<a[place[mark[k]]]<<"a[0] "<<a[0]<<endl;
+                        a[0]--;
+                    }
+                    else if(place[k]!=0 && k != i)
+                    {
+                        a[place[k]] = a[a[0]];
+                        place[k] = 0;
+                        //cout<<" a "<<a[place[mark[k]]]<<"a[0] "<<a[0]<<endl;
+                        a[0]--;
+                    }
+                    if(k==i)cycle[i]=1;
+                }
+            }
+            if(cycle[i]==0)continue;
+ 
+            //cout<<"cycle "<<i<<endl;
+            q.push(i);
+            while(!q.empty())
+            {
+                x = q.front();q.pop();
+ 
+                for(vector<int>::iterator it=head[x].end();it!=head[x].begin();)
+                {
+                    it--;
+ 
+                    k = *it;
+ 
+                    if(mark[k]==i && cycle[k]==0)
+                    {
+                        q.push(k);cycle[k]=1;
+                    }
+                }
+            }
+        }
+        cout<<a[0]<<"\n";
+        /*for(i=1;i<=n;i++)
+        {
+            cout<<i<<" "<<mark[i]<<" "<<cycle[i]<<" "<<m[i]<<endl;
+        }*/
+        for(x=1;x<=n;x++)
+        {
+            for(vector<int>::iterator it=node[x].end();it!=node[x].begin();)
+            {
+                it--;
+                node[x].pop_back();
+            }
+            for(vector<int>::iterator it=head[x].end();it!=head[x].begin();)
+            {
+                it--;
+                head[x].pop_back();
+            }
+        }
+    }
+    //main();
+    return 0;
+}
