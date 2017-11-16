@@ -17,10 +17,12 @@
 #include<map>
 #include<iterator>
 using namespace std;
+
 vector< vector<int> >node(10010),head(10010);
 int a[10010],mark[10010],place[10010],cycle[10010],m[10010];
 queue<int>q;
 map<pair<int,int>,int>mp;
+
 int main()
 {
     int i,j,k,n,s,x,d,mx,t,T;
@@ -40,8 +42,8 @@ int main()
             if(mp[make_pair(j,k)]==0)
             {
                 mp[make_pair(j,k)]++;
-                node[j].push_back(k);
-                head[k].push_back(j);
+                node[j].push_back(k);// the node[j] vector stores the childs of j th node.
+                head[k].push_back(j);// the head[k] vector stores the parents of k th node.
             }
  
         }
@@ -53,7 +55,11 @@ int main()
             if(mark[i]!=0)continue;
  
             mark[i]=i;q.push(i);//cout<<" q-> "<<i<<endl;
+            // mark[i] stores the id of the node(marker) which switch on the i th node.
+
             a[0]++;a[a[0]]=i;place[i]=a[0];
+            //a[0] stores the number of the markers. a[value] stores the 'value' th marker. place[i] stores the id of the marker in 'a' array
+            
             while(!q.empty())
             {
                 x = q.front();q.pop();//cout<<"X:"<<x<<endl;
@@ -62,12 +68,13 @@ int main()
                 {
                     k = *it;//cout<<"k "<<k<<endl;
                     //cout<<"mark "<<mark[k]<<endl;
-                    if(mark[k]==0)
+                    if(mark[k]==0)// if k is unmarked; mark with i
                     {
                         q.push(k);mark[k]=i;//cout<<"q-> "<<k<<endl;
                         //cout<<"mark "<<mark[k]<<endl;
                     }
-                    else if(cycle[k]==1 && place[mark[k]]!=0)
+                    else if(cycle[k]==1 && place[mark[k]]!=0) 
+                    // if cycle at k is true & if marker of k, mark[k] is on the list of the marker  
                     {
                         //cout<<"place "<<place[mark[k]]<<" a "<<a[place[mark[k]]]<<" a[a[0]] "<<a[a[0]]<<endl;
                         a[place[mark[k]]] = a[a[0]];
@@ -75,7 +82,7 @@ int main()
                         //cout<<" a "<<a[place[mark[k]]]<<"a[0] "<<a[0]<<endl;
                         a[0]--;
                     }
-                    else if(place[k]!=0 && k != i)
+                    else if(place[k]!=0 && k != i)// if k is a marker and k is not i
                     {
                         a[place[k]] = a[a[0]];
                         place[k] = 0;
